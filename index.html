@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Society Handover Tracker</title>
+<meta name="description" content="Track flat-wise and common-area pending work for society handover." />
+<style>
+:root{--navy:#14213d;--blue:#3157d5;--bg:#f4f6fb;--text:#20283a;--muted:#68738a;--line:#e4e8f1;--green:#16845b;--red:#c44949;--amber:#a86b00}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(120deg,#14213d,#294b9b);color:#fff;padding:28px max(20px,calc((100% - 1180px)/2)) 26px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.78;font-weight:700}h1{margin:7px 0 8px;font-size:clamp(25px,4vw,36px);letter-spacing:-.03em}.sub{margin:0;color:#dce5ff;max-width:700px;line-height:1.5}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #ffffff50;background:#ffffff12;padding:9px 12px;border-radius:99px;font-size:13px}
+main{max-width:1180px;margin:24px auto;padding:0 20px 50px}.notice{background:#fff8e8;border:1px solid #f1d99e;color:#795300;padding:12px 15px;border-radius:12px;font-size:13px;line-height:1.5;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}.stat,.panel{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 18px #1d2e5010}.stat{padding:17px 18px}.stat span{display:block;color:var(--muted);font-size:13px}.stat strong{display:block;font-size:28px;margin-top:5px;letter-spacing:-.04em}.stat small{color:var(--muted);font-size:12px}
+.layout{display:grid;grid-template-columns:330px 1fr;gap:18px;align-items:start}.panel{padding:20px}.panel h2{font-size:18px;margin:0 0 6px}.hint{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 17px}
+label{display:block;font-size:12px;font-weight:700;color:#4c5870;margin:13px 0 6px}input,select,textarea{width:100%;border:1px solid #d9deea;border-radius:9px;padding:11px 12px;font:inherit;font-size:14px;background:#fff;color:var(--text)}textarea{min-height:94px;resize:vertical}input:focus,select:focus,textarea:focus{outline:3px solid #3157d522;border-color:var(--blue)}
+button{font:inherit;font-weight:700;border:0;border-radius:9px;padding:11px 14px;cursor:pointer}.primary{background:var(--blue);color:white;width:100%;margin-top:15px}.primary:hover{background:#2346bd}.secondary{background:#edf1ff;color:#2444aa}.danger{background:#fff0f0;color:var(--red)}.smallbtn{padding:7px 9px;font-size:12px}.authrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.authrow button{margin-top:12px}.statusline{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.45;word-break:break-word}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0}.toolbar input{flex:1;min-width:170px}.toolbar select{width:auto;min-width:130px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{border-collapse:collapse;width:100%;min-width:760px;background:white}th{background:#f7f8fc;color:#5d6880;font-size:11px;text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:12px;border-bottom:1px solid var(--line);white-space:nowrap}td{padding:13px 12px;border-bottom:1px solid #edf0f6;font-size:13px;vertical-align:top}tr:last-child td{border-bottom:0}.tasktitle{font-weight:750;font-size:14px;margin-bottom:5px}.muted{color:var(--muted);font-size:12px;line-height:1.45}.badge{display:inline-block;border-radius:99px;padding:5px 8px;font-size:11px;font-weight:800;white-space:nowrap}.pending{background:#fff1d8;color:#925d00}.done{background:#dff7ec;color:#08754b}.actions{display:flex;gap:6px;flex-wrap:wrap}.empty{text-align:center;padding:40px 15px;color:var(--muted)}.sectionhead{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.footer{color:var(--muted);font-size:12px;text-align:center;padding:25px 10px 0}.hidden{display:none!important}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}main{padding:0 12px 35px}.panel{padding:16px}}
+@media(max-width:430px){.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:24px}.authrow{grid-template-columns:1fr}}
+
+/* Responsive layout improvements */
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{min-width:320px;overflow-x:hidden}
+header{padding-left:max(16px,calc((100% - 1180px)/2));padding-right:max(16px,calc((100% - 1180px)/2))}
+button,input,select,textarea{max-width:100%;touch-action:manipulation}
+button{min-height:40px}
+.panel,.stat{min-width:0}
+.toolbar{width:100%}
+.toolbar input{min-width:0}
+.tablewrap{max-width:100%;overscroll-behavior-x:contain}
+@media(max-width:850px){
+ header{padding-top:22px;padding-bottom:22px}
+ .top{align-items:flex-start}
+ .layout{grid-template-columns:minmax(0,1fr)}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ main{margin-top:16px;padding-left:12px;padding-right:12px}
+ .panel{padding:16px}
+}
+@media(max-width:640px){
+ header{padding:20px 14px}
+ h1{font-size:clamp(24px,7vw,32px);line-height:1.12}
+ .sub{font-size:14px}
+ .pill{font-size:12px;padding:7px 10px}
+ main{padding:0 10px 28px}
+ .stats{gap:8px;margin-bottom:12px}
+ .stat{padding:12px;border-radius:12px}
+ .stat span{font-size:12px;line-height:1.35}
+ .stat strong{font-size:24px}
+ .stat small{font-size:11px;line-height:1.35}
+ .panel{padding:14px;border-radius:13px}
+ .authrow{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .authrow button{padding:10px 8px;font-size:12px}
+ .toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+ .toolbar input,.toolbar select{width:100%;min-width:0}
+ .sectionhead{align-items:flex-start}
+ .sectionhead>button{flex-shrink:0}
+ .tablewrap{border:0;overflow:visible}
+ table{min-width:0;width:100%;border-collapse:separate;border-spacing:0}
+ table thead{display:none}
+ table tbody{display:grid;gap:10px}
+ table tbody tr{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 3px 12px #1d2e5008}
+ table tbody td{display:grid;grid-template-columns:minmax(82px,30%) minmax(0,1fr);gap:10px;padding:10px 12px;border-bottom:1px solid #edf0f6;font-size:13px;overflow-wrap:anywhere}
+ table tbody td::before{content:attr(data-label);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);align-self:start}
+ table tbody td:last-child{border-bottom:0}
+ table tbody td .actions{min-width:0}
+ table tbody td .actions button{white-space:normal}
+ #emptyState{background:#fff;border:1px solid var(--line);border-radius:12px}
+ .footer{line-height:1.5;padding-top:18px}
+}
+@media(max-width:380px){
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .stat{padding:10px}
+ .stat strong{font-size:22px}
+ .authrow{grid-template-columns:1fr}
+ table tbody td{grid-template-columns:1fr;gap:4px}
+ .sectionhead{flex-direction:column}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div><div class="eyebrow">Society handover · builder coordination</div><h1>Handover Work Tracker</h1><p class="sub">One shared place to report flat-level and common-area pending work, and track each item until it is completed.</p></div>
+    <div class="pill" id="connectionPill">● Demo mode</div>
+  </div>
+</header>
+<main>
+  <div class="notice" id="setupNotice"><strong>Setup required:</strong> This page is currently in demo mode. To share one live work register with all residents, configure Supabase using <code>supabase-schema.sql</code> and the README. GitHub Pages alone cannot share database changes.</div>
+  <section class="stats">
+    <div class="stat"><span>Total work items</span><strong id="totalCount">0</strong><small>All flats and common areas</small></div>
+    <div class="stat"><span>Pending</span><strong id="pendingCount">0</strong><small>Needs action</small></div>
+    <div class="stat"><span>Completed</span><strong id="doneCount">0</strong><small>Marked done by builder</small></div>
+    <div class="stat"><span>Completion</span><strong id="completionPct">0%</strong><small>Overall handover progress</small></div>
+  </section>
+  <div class="layout">
+    <aside class="panel">
+      <h2>Report a work item</h2><p class="hint">Flat owners can add individual issues. For shared spaces, choose “Common area” and select the floor or building-wide location.</p>
+      <form id="taskForm">
+        <label for="areaType">Work location type</label>
+        <select id="areaType"><option value="flat">Inside a flat</option><option value="common">Common area</option></select>
+        <div id="flatFields">
+          <label for="flatNumber">Flat number</label>
+          <select id="flatNumber"></select>
+        </div>
+        <div id="commonFields" class="hidden">
+          <label for="commonLocation">Common area location</label>
+          <select id="commonLocation">
+            <option value="Ground floor">Ground floor</option><option value="1st floor">1st floor</option><option value="2nd floor">2nd floor</option><option value="3rd floor">3rd floor</option><option value="4th floor">4th floor</option><option value="5th floor">5th floor</option><option value="6th floor">6th floor</option><option value="Terrace / roof">Terrace / roof</option><option value="Staircase">Staircase</option><option value="Lift / lift lobby">Lift / lift lobby</option><option value="Parking">Parking</option><option value="Entrance / gate">Entrance / gate</option><option value="Water / electrical room">Water / electrical room</option><option value="Other building-wide area">Other building-wide area</option>
+          </select>
+        </div>
+        <label for="taskTitle">Work items / issues</label><textarea id="taskTitle" required maxlength="2000" placeholder="Add one problem per line, e.g.
+Bathroom exhaust fan not working
+Bedroom door lock jammed
+Balcony seepage"></textarea><p class="hint" style="margin:6px 0 0">You can add multiple problems together. Enter each problem on a new line; every line will appear as a separate item in the work register.</p>
+        <label for="taskDetails">Details (optional)</label><textarea id="taskDetails" maxlength="1000" placeholder="Describe exactly what is pending, including room/spot or reference."></textarea>
+        <label for="reportedBy">Your name</label><input id="reportedBy" required maxlength="80" placeholder="Owner / resident name" />
+        <label for="reporterEmail">Email (optional)</label><input id="reporterEmail" type="email" maxlength="150" placeholder="For follow-up" />
+        <button class="primary" type="submit">＋ Add pending work</button>
+      </form>
+      <hr style="border:0;border-top:1px solid var(--line);margin:22px 0 16px">
+      <h2>Shared access</h2><p class="hint">No account or email sign-in is required. Anyone with the website link can view, add, and change the status of work items.</p>
+      <div class="statusline" id="authStatus">Demo mode: changes are saved only in this browser. Connect Supabase for shared updates.</div>
+    </aside>
+    <section class="panel">
+      <div class="sectionhead"><div><h2>Work register</h2><p class="hint" style="margin:5px 0 0">Every reported issue is tracked as a separate row.</p></div><button id="exportBtn" class="secondary smallbtn" type="button">Export CSV</button></div>
+      <div class="toolbar">
+        <input id="searchInput" type="search" placeholder="Search work, flat, location, reporter…" />
+        <select id="locationFilter"><option value="all">All locations</option><option value="flat">Flats only</option><option value="common">Common areas only</option></select>
+        <select id="statusFilter"><option value="all">All statuses</option><option value="pending">Pending</option><option value="done">Done</option></select>
+      </div>
+      <div class="tablewrap"><table><thead><tr><th>Location</th><th>Work item</th><th>Reported by</th><th>Date added</th><th>Status</th><th>Action</th></tr></thead><tbody id="taskRows"></tbody></table><div id="emptyState" class="empty hidden">No work items match these filters.</div></div>
+      <div class="footer">Suggested handover workflow: report clearly → builder reviews → builder marks done → resident verifies during inspection.</div>
+    </section>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* Add your Supabase Project URL and publishable/anon public key below.
+   This version is open to anyone with the link. Never place a service_role/secret key here. */
+const SUPABASE_URL = "";
+const SUPABASE_ANON_KEY = "";
+
+const flatSelect = document.getElementById('flatNumber');
+for(let floor=1;floor<=6;floor++) for(let n=1;n<=4;n++){const opt=document.createElement('option');opt.value=`${floor}0${n}`;opt.textContent=`${floor}0${n}`;flatSelect.appendChild(opt)}
+const $ = id => document.getElementById(id);
+const configured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
+let client = configured ? window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY) : null;
+let tasks = [];
+const demoKey = 'society-handover-demo-v1';
+
+function localDate(v){try{return new Date(v).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}catch{return ''}}
+function setConnection(){ $('connectionPill').textContent=configured?'● Live shared database':'● Demo mode';$('setupNotice').classList.toggle('hidden',configured)}
+function loadDemo(){try{tasks=JSON.parse(localStorage.getItem(demoKey)||'[]')}catch{tasks=[]}}
+function saveDemo(){localStorage.setItem(demoKey,JSON.stringify(tasks))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function updateStats(){const done=tasks.filter(t=>t.status==='done').length;const total=tasks.length;$('totalCount').textContent=total;$('pendingCount').textContent=total-done;$('doneCount').textContent=done;$('completionPct').textContent=(total?Math.round(done/total*100):0)+'%'}
+function render(){
+ updateStats();const query=$('searchInput').value.trim().toLowerCase(),loc=$('locationFilter').value,st=$('statusFilter').value;
+ const filtered=tasks.filter(t=>{const hay=[t.location,t.title,t.details,t.reported_by,t.flat_number,t.area_type].join(' ').toLowerCase();return(!query||hay.includes(query))&&(loc==='all'||t.area_type===loc)&&(st==='all'||t.status===st)}).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ $('taskRows').innerHTML=filtered.map(t=>`<tr><td data-label="Location"><div><strong>${esc(t.location)}</strong><div class="muted">${t.area_type==='flat'?'Flat':'Common area'}</div></div></td><td data-label="Work item"><div><div class="tasktitle">${esc(t.title)}</div>${t.details?`<div class="muted">${esc(t.details)}</div>`:''}</div></td><td data-label="Reported by"><div>${esc(t.reported_by||'—')}${t.reporter_email?`<div class="muted">${esc(t.reporter_email)}</div>`:''}</div></td><td data-label="Date added">${localDate(t.created_at)}</td><td data-label="Status"><div><span class="badge ${t.status==='done'?'done':'pending'}">${t.status==='done'?'✓ Done':'● Pending'}</span>${t.completed_at?`<div class="muted">Completed ${localDate(t.completed_at)}</div>`:''}</div></td><td data-label="Action"><div class="actions"><button class="smallbtn ${t.status==='done'?'secondary':'primary'}" data-toggle="${esc(t.id)}">${t.status==='done'?'Reopen':'Mark done'}</button></div></td></tr>`).join('');
+ $('emptyState').classList.toggle('hidden',filtered.length!==0);
+ document.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>toggleStatus(b.dataset.toggle)));
+}
+function getLocation(){return $('areaType').value==='flat'?$('flatNumber').value:$('commonLocation').value}
+$('areaType').addEventListener('change',()=>{const flat=$('areaType').value==='flat';$('flatFields').classList.toggle('hidden',!flat);$('commonFields').classList.toggle('hidden',flat)});
+$('taskForm').addEventListener('submit',async e=>{
+ e.preventDefault();const areaType=$('areaType').value;
+ const titles=$('taskTitle').value.split(/\r?\n/).map(title=>title.trim()).filter(Boolean);
+ if(!titles.length){alert('Enter at least one work item.');return}
+ if(titles.length>50){alert('Please add no more than 50 work items at a time.');return}
+ const common={area_type:areaType,flat_number:areaType==='flat'?$('flatNumber').value:null,location:getLocation(),details:$('taskDetails').value.trim(),reported_by:$('reportedBy').value.trim(),reporter_email:$('reporterEmail').value.trim()||null,status:'pending'};
+ if(!common.reported_by){alert('Please enter your name.');return}
+ const items=titles.map(title=>({...common,title}));
+ if(configured){const {error}=await client.from('handover_tasks').insert(items);if(error){alert('Could not add work items: '+error.message);return}await fetchTasks()}
+ else{const now=new Date().toISOString();items.forEach((item,index)=>{item.id=crypto.randomUUID?crypto.randomUUID():String(Date.now()+index);item.created_at=now;item.completed_at=null});tasks.push(...items);saveDemo();render()}
+ $('taskTitle').value='';$('taskDetails').value='';alert(`${items.length} work item${items.length===1?'':'s'} added${configured?' for everyone to see.':'. Demo data is saved in this browser only; connect Supabase for shared use.'}`);
+});
+async function fetchTasks(){if(!configured)return;const {data,error}=await client.from('handover_tasks').select('*').order('created_at',{ascending:false});if(error){$('authStatus').textContent='Database error: '+error.message;return}tasks=data||[];render()}
+async function toggleStatus(id){
+ const t=tasks.find(x=>String(x.id)===String(id));if(!t)return;
+ if(configured){const status=t.status==='done'?'pending':'done';const {error}=await client.from('handover_tasks').update({status,completed_at:status==='done'?new Date().toISOString():null}).eq('id',id);if(error){alert('Could not update status: '+error.message);return}await fetchTasks();
+ }else{t.status=t.status==='done'?'pending':'done';t.completed_at=t.status==='done'?new Date().toISOString():null;saveDemo();render()}
+}
+// No authentication: Supabase RLS policies grant public read/insert/update access.
+$('searchInput').addEventListener('input',render);$('locationFilter').addEventListener('change',render);$('statusFilter').addEventListener('change',render);
+$('exportBtn').addEventListener('click',()=>{const headers=['Location type','Location','Work item','Details','Reported by','Reporter email','Status','Date added','Completed date'];const rows=tasks.map(t=>[t.area_type,t.location,t.title,t.details||'',t.reported_by||'',t.reporter_email||'',t.status,t.created_at,t.completed_at||'']);const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='society-handover-work.csv';a.click();URL.revokeObjectURL(a.href)});
+setConnection();
+if(configured){$('authStatus').textContent='Connected to shared database. Public access is enabled; anyone with the link can add items and change status.';fetchTasks();client.channel('handover-task-changes').on('postgres_changes',{event:'*',schema:'public',table:'handover_tasks'},()=>fetchTasks()).subscribe()}else{loadDemo();render()}
+</script>
+</body>
+</html>
